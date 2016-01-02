@@ -4,5 +4,5 @@ channels:
   "#cs-york":
     network: Freenode
     format: irssi
-    inputfile: freenode-cs-york.log
+    inputfile: logsamples/irssi-sample.log
     outputfile: csyork.html

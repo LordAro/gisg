@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/LordAro/gisg/parsers"
 	"github.com/docopt/docopt-go"
 	"gopkg.in/yaml.v2"
 )
@@ -51,5 +52,19 @@ func main() {
 	if err = yaml.Unmarshal(cfgData, &cfg); err != nil {
 		log.Fatalln(err.Error())
 	}
-	log.Println(cfg)
+
+	for chanName, chanData := range cfg.Channels {
+		parser := parsers.NewParser(chanData.Format)
+		if parser == nil {
+			log.Println("Unknown format: " + chanData.Format)
+			continue
+		}
+
+		log.Println(chanName + ":")
+		err = parsers.ParseFile(parser, chanData.InputFile)
+		if err != nil {
+			log.Println(err.Error())
+			continue
+		}
+	}
 }
