@@ -1,0 +1,8 @@
+maintainer: Mr Example
+
+channels:
+  "#cs-york":
+    network: Freenode
+    format: irssi
+    inputfile: freenode-cs-york.log
+    outputfile: csyork.html
