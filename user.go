@@ -9,7 +9,7 @@ import (
 
 type User struct {
 	Name        string
-	HoursActive [24]int
+	HoursActive []int
 
 	Actions  []string
 	Messages []string
@@ -33,6 +33,7 @@ func (u *User) String() string {
 
 func NewUser(nick string) *User {
 	return &User{
-		Name: nick,
+		Name:        nick,
+		HoursActive: make([]int, 24),
 	}
 }

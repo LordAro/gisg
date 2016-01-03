@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/LordAro/gisg/formats"
+	"github.com/LordAro/gisg/tmpl_util"
 )
 
 func GetLines(path string) ([]string, error) {
@@ -84,8 +85,8 @@ func (c *Channel) Process(f formats.Formatter) error {
 	return nil
 }
 
-func (c *Channel) HoursActive() [24]int {
-	var channelActive [24]int
+func (c *Channel) HoursActive() []int {
+	channelActive := make([]int, 24)
 	for _, u := range c.Users {
 		for i := range u.HoursActive {
 			channelActive[i] += u.HoursActive[i]
@@ -95,7 +96,7 @@ func (c *Channel) HoursActive() [24]int {
 }
 
 func (c *Channel) HTML(maint string) (*bytes.Buffer, error) {
-	t, err := template.ParseGlob("templates/*.tmpl")
+	t, err := template.New("").Funcs(tmpl_util.GetFuncMap()).ParseGlob("templates/*.tmpl")
 	if err != nil {
 		return nil, err
 	}
@@ -104,10 +105,12 @@ func (c *Channel) HTML(maint string) (*bytes.Buffer, error) {
 		*Channel
 		Maintainer string
 		GenTime    time.Time
+		Imgs       []string
 	}{
 		c,
 		maint,
 		time.Now().UTC(),
+		[]string{"blue", "green", "yellow", "red"},
 	}
 
 	buf := new(bytes.Buffer)

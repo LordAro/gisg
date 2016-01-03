@@ -6,9 +6,29 @@
     </style>
   </head>
   <body>
-	<br />
+    <br />
     <h1>{{ .Name }} @ {{ .Network }} stats by {{ .Maintainer }}</h1>
-	<span class="small">Generated at: {{ .GenTime }}</span><br />
+    <span class="small">Generated at: {{ .GenTime }}</span><br />
+    <div class="heading">Most active times</div>
+    <table class="graph">
+      <tr>
+      {{ with $TotalHours := sum .HoursActive }}
+      {{ with $MaxHours := max $.HoursActive }}
+      {{ range $i, $e := $.HoursActive }}
+        <td class="graphbar">
+          {{ divf64 . $TotalHours | toPercent "%.1f" }}%<br />
+          <img src="assets/{{ divint $i 6 | index $.Imgs }}-v.png" width=15px height={{ divf64 $e $MaxHours | toPercent "%.0f" }}px alt="{{ $e }}" title="{{ $e }}" />
+        </td>
+      {{ end }}
+      {{ end }}
+      {{ end }}
+      </tr>
+      <tr>
+      {{ range $i, $e := .HoursActive }}
+        <td class="graphlabel">{{ $i }}</td>
+      {{ end }}
+      </tr>
+    </table>
     Hours: {{ .HoursActive }}
   </body>
 </html>
