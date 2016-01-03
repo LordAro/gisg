@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>{{ .Name }} @ {{ .Network }} stats by {{ .Maintainer }}</title>
+    <style type="text/css" title="default">
+{{ template "css.tmpl" }}
+    </style>
+  </head>
+  <body>
+	<br />
+    <h1>{{ .Name }} @ {{ .Network }} stats by {{ .Maintainer }}</h1>
+	<span class="small">Generated at: {{ .GenTime }}</span><br />
+    Hours: {{ .HoursActive }}
+  </body>
+</html>

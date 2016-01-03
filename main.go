@@ -1,22 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
-	"github.com/LordAro/gisg/parsers"
+	"github.com/LordAro/gisg/formats"
 	"github.com/docopt/docopt-go"
 	"gopkg.in/yaml.v2"
 )
-
-//  pisg [-ch channel] [-l logfile] [-o outputfile] [-ma maintainer]
-//       [-f format] [-ne network] [-d logdir] [-mo moduledir] [-s] [-v] [-h]
 
 func ParseArgs() map[string]interface{} {
 	usage := `Go IRC Statistics Generator.
 
 Usage:
-  gisg -c CFG [-s]
+  gisg [-c CFG -s]
 
 Options:
   -c --config-file=CFG  Configuration file [default: gisg.yaml].
@@ -54,14 +53,37 @@ func main() {
 	}
 
 	for chanName, chanData := range cfg.Channels {
-		parser := parsers.NewParser(chanData.Format)
-		if parser == nil {
+		formatter := formats.NewFormatter(chanData.Format)
+		if formatter == nil {
 			log.Println("Unknown format: " + chanData.Format)
 			continue
 		}
 
-		log.Println(chanName + ":")
-		err = parsers.ParseFile(parser, chanData.InputFile)
+		fmt.Println(chanName + ":")
+		channel := NewChannel(chanName, chanData.Network, chanData.InputFile)
+		err = channel.Process(formatter)
+		if err != nil {
+			log.Println(err.Error())
+			continue
+		}
+
+		//for _, u := range channel.Users {
+		//	fmt.Println(u)
+		//}
+		//fmt.Println(channel.HoursActive())
+
+		data, err := channel.HTML(cfg.Maintainer)
+		if err != nil {
+			log.Println(err.Error())
+			continue
+		}
+		f, err := os.Create(chanData.OutputFile)
+		if err != nil {
+			log.Println(err.Error())
+			continue
+		}
+
+		_, err = f.Write(data.Bytes())
 		if err != nil {
 			log.Println(err.Error())
 			continue
